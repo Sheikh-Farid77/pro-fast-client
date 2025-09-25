@@ -35,8 +35,8 @@ export default function Nav() {
   );
 
   return (
-    <header className="sticky top-0 z-50 bg-white backdrop-blur-md border-b border-gray-200">
-      <div className="container mx-auto flex items-center justify-between px-6 py-3">
+    <header className="sticky top-0 z-50 bg-slate-100 backdrop-blur-md border-b border-gray-200">
+      <div className="container mx-auto flex items-center justify-between px-6 py-3 bg-white rounded-2xl">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 text-xl font-bold">
           <Logo />
