@@ -1,6 +1,7 @@
 import Banner from "../components/banner/Banner";
 import Benefits from "../components/benefit/Benefit";
 import BrandSection from "../components/brands/BrandSection";
+import BeMarchant from "../components/marchant/BeMarchant";
 import Services from "../components/service/Service";
 
 export default function HomePage(){
@@ -10,6 +11,7 @@ export default function HomePage(){
         <Services />
         <BrandSection />
         <Benefits />
+        <BeMarchant />
         </>
     );
 }

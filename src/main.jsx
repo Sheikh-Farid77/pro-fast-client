@@ -3,11 +3,14 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { RouterProvider } from "react-router";
 import { router } from "./router/router";
+import AuthProvider from "./provider/AuthProvider";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
- <div className="urbanist">
-     <RouterProvider router={router} />
- </div>
+    <div className="urbanist">
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </div>
   </StrictMode>
 );

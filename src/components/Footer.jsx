@@ -2,8 +2,8 @@ import Logo from "./Logo";
 
 export default function Footer() {
   return (
-    <div>
-      <footer className="footer footer-horizontal footer-center text-primary-content p-10 container mx-auto">
+    <div className="bg-slate-100">
+      <footer className="footer footer-horizontal footer-center bg-black rounded-3xl p-10 container mx-auto">
       <aside>
       <Logo />
         <p className="font-bold">
