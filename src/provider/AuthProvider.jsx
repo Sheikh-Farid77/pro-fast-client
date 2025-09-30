@@ -44,11 +44,12 @@ export default function AuthProvider({ children }) {
     const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        setLoading(false);
+  
       }else{
         setUser(null);
-        setLoading(false)
+      
       }
+      setLoading(false)
     });
 
     return () => unSubscribe();

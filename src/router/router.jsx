@@ -4,6 +4,10 @@ import HomePage from "../pages/HomePage";
 import AuthLayout from "../layouts/AuthLayout";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
+import CoveragePage from "../pages/CoveragePage";
+
+import PrivateRoute from "../route/PrivateRoute";
+import SendParcelPage from "../pages/SendParcelPage";
 
 export let router = createBrowserRouter([
   {
@@ -13,6 +17,19 @@ export let router = createBrowserRouter([
       {
         index: true,
         Component: HomePage,
+      },
+      {
+        path: "coverage",
+        Component: CoveragePage,
+      },
+      {
+        path: "send_parcel",
+        element: (
+          <PrivateRoute>
+            <SendParcelPage />
+          </PrivateRoute>
+        ),
+        loader: () => fetch('../../public/data/warehouses.json')
       },
     ],
   },
@@ -26,8 +43,8 @@ export let router = createBrowserRouter([
       },
       {
         path: "register",
-        Component: RegisterPage
-      }
+        Component: RegisterPage,
+      },
     ],
   },
 ]);

@@ -32,7 +32,7 @@ export default function RegisterPage() {
   };
   return (
     <div>
-      <form onSubmit={handleSubmit(submitForm)} className="flex flex-col gap-4">
+     <form onSubmit={handleSubmit(submitForm)} className="flex flex-col gap-4">
         <FieldSet label="Login with ProFast">
           <Field label="Name" error={errors.name}>
             <input
@@ -109,7 +109,7 @@ export default function RegisterPage() {
             Register
           </button>
         </Field>
-      </form>
+      </form> 
       <Social />
     </div>
   );

@@ -1,35 +1,61 @@
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useNavigate } from "react-router";
 import { useState } from "react";
 import Logo from "./Logo";
+import useAuth from "../hooks/useAuth";
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
+  const { user, logOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logOut()
+      .then(() => {
+        navigate("/login");
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
 
   const navItems = (
     <>
       <NavLink
         to="/"
         className={({ isActive }) =>
-          `relative px-3 py-2 font-medium transition ${
+          `relative px-3 py-2 font-semibold text-xl text-gray-700  transition ${
             isActive
-              ? "text-blue-600 after:w-full"
+              ? "bg-[#CAEB66] px-5 py-2 rounded-full after:w-full"
               : "text-gray-700 hover:text-blue-600"
-          } after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full`
+          }`
         }
       >
         Home
       </NavLink>
       <NavLink
-        to="/about"
+        to="/send_parcel"
         className={({ isActive }) =>
-          `relative px-3 py-2 font-medium transition ${
+          `relative px-3 py-2 font-semibold text-xl text-gray-700  transition ${
             isActive
-              ? "text-blue-600 after:w-full"
+              ? "bg-[#CAEB66] px-5 py-2 rounded-full after:w-full"
               : "text-gray-700 hover:text-blue-600"
-          } after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:bg-blue-600 after:transition-all hover:after:w-full`
+          }`
         }
       >
-        About Us
+        Send Parcel
+      </NavLink>
+
+      <NavLink
+        to="/coverage"
+        className={({ isActive }) =>
+          `relative px-3 py-2 font-semibold text-xl text-gray-700  transition ${
+            isActive
+              ? "bg-[#CAEB66] px-5 py-2 rounded-full after:w-full"
+              : "text-gray-700 hover:text-blue-600"
+          }`
+        }
+      >
+        Coverage
       </NavLink>
     </>
   );
@@ -46,14 +72,29 @@ export default function Nav() {
         <nav className="hidden md:flex items-center gap-6">{navItems}</nav>
 
         {/* CTA Button */}
-        <div className="hidden md:block">
-          <Link
-            to="/get-started"
-            className="px-5 py-2 rounded-full bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
-          >
-            Get Started
-          </Link>
-        </div>
+        {user ? (
+          <>
+            <div className="hidden md:block">
+              <button
+                onClick={handleLogout}
+                className="px-5 py-2 cursor-pointer rounded-full bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
+              >
+                Logout
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="hidden md:block">
+              <Link
+                to="/login"
+                className="px-5 py-2 rounded-full bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
+              >
+                Login
+              </Link>
+            </div>
+          </>
+        )}
 
         {/* Mobile Menu Button */}
         <button
@@ -91,12 +132,25 @@ export default function Nav() {
         <div className="md:hidden bg-white/95 backdrop-blur-md border-t border-gray-200 shadow-md">
           <nav className="flex flex-col items-center py-4 space-y-4">
             {navItems}
-            <Link
-              to="/get-started"
-              className="px-5 py-2 rounded-full bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
-            >
-              Get Started
-            </Link>
+            {user ? (
+              <>
+                <button
+                  onClick={handleLogout}
+                  className="px-5 py-2 cursor-pointer rounded-full bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="px-5 py-2 rounded-full bg-blue-600 text-white font-medium shadow hover:bg-blue-700 transition"
+                >
+                  Login
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       )}
