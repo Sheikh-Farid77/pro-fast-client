@@ -3,12 +3,13 @@ import FieldSet from "../components/form/FieldSet";
 import Field from "../components/form/Field";
 import useAuth from "../hooks/useAuth";
 import { useLoaderData } from "react-router";
-import { useState } from "react";
-import toast from "react-hot-toast";
+import Swal from "sweetalert2";
+import useAxios from "../hooks/useAxios";
 
 export default function AddParcel() {
-  const { loading } = useAuth();
-  const [calculatedCost, setCalculatedCost] = useState(0);
+  const { loading, user } = useAuth();
+  const api = useAxios();
+
   const serviceCenter = useLoaderData();
   const uniqueRegions = [...new Set(serviceCenter.map((item) => item.region))];
   const getDistrictByRegion = (region) => {
@@ -28,66 +29,85 @@ export default function AddParcel() {
   const senderRegion = watch("senderRegion");
   const receiverRegion = watch("receiverRegion");
 
-
   // calculate delivery charge
   function calculateDeliveryCost(parcel) {
-  const { type, weight, senderRegion, receiverRegion } = parcel;
-  const w = parseFloat(weight) || 0;
+    const { type, weight, senderRegion, receiverRegion } = parcel;
+    const w = parseFloat(weight) || 0;
 
-  // Determine if it's within the same city/region
-  const isWithinCity =
-    senderRegion.trim().toLowerCase() === receiverRegion.trim().toLowerCase();
+    // Determine if it's within the same city/region
+    const isWithinCity =
+      senderRegion.trim().toLowerCase() === receiverRegion.trim().toLowerCase();
 
-  let cost = 0;
+    let cost = 0;
 
-  if (type === "document") {
-    cost = isWithinCity ? 60 : 80;
-  } else if (type === "non-document") {
-    if (w <= 3) {
-      cost = isWithinCity ? 110 : 150;
-    } else {
-      const extraWeight = w - 3;
-      if (isWithinCity) {
-        cost = 110 + extraWeight * 40;
+    if (type === "document") {
+      cost = isWithinCity ? 60 : 80;
+    } else if (type === "non-document") {
+      if (w <= 3) {
+        cost = isWithinCity ? 110 : 150;
       } else {
-        cost = 150 + extraWeight * 40 + 40;
+        const extraWeight = w - 3;
+        if (isWithinCity) {
+          cost = 110 + extraWeight * 40;
+        } else {
+          cost = 150 + extraWeight * 40 + 40;
+        }
       }
     }
+
+    return Math.round(cost);
   }
 
-  return Math.round(cost);
-}
+  // generate tracking id
+  function generateTrackingId(prefix = "TRK") {
+    const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    // e.g., 20250930
+    const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+    return `${prefix}-${datePart}-${randomPart}`;
+  }
 
+  const onSubmit = (data) => {
+    const cost = calculateDeliveryCost(data);
+    // keep if you also show it elsewhere
 
- const onSubmit = (data) => {
-  const cost = calculateDeliveryCost(data);
-  setCalculatedCost(cost); // keep this if you need to display elsewhere
+    Swal.fire({
+      title: "Delivery Cost",
+      html: `<p class="font-semibold">Delivery Fee ৳ ${cost}</p>`,
+      showCancelButton: true,
+      confirmButtonText: "Confirm",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#2563eb", // Tailwind's blue-600
+      focusConfirm: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const parcel = {
+          ...data,
+          creation_date: new Date().toISOString(),
+          email: user.email,
+          delivery_status: "not collected",
+          payment_status: "unpaid",
+          trackingId: generateTrackingId(),
+          cost, // save cost with the parcel
+        };
+       
 
-  toast(
-    (t) => (
-      <div className="flex flex-col gap-3">
-        <p className="font-semibold">Delivery Cost: ৳ {cost}</p>
-        <button
-          onClick={() => {
-            const parcel = {
-              ...data,
-              creation_date: new Date().toISOString(),
-              cost, // save cost with the parcel
-            };
-            console.log("Saved Parcel:", parcel); // save to DB here
-            toast.dismiss(t.id);
-            toast.success("Parcel Confirmed!");
-            reset();
-          }}
-          className="bg-blue-600 text-white px-3 py-1 rounded-md"
-        >
-          Confirm
-        </button>
-      </div>
-    ),
-    { duration: 8000 }
-  );
-};
+        api.post("/parcels", parcel).then((res) => {
+          if (res.data.insertedId) {
+            Swal.fire({
+              icon: "success",
+              title: "Parcel Confirmed!",
+              timer: 2000,
+              showConfirmButton: false,
+            });
+
+            // navigate to payment page
+          }
+        });
+
+        reset();
+      }
+    });
+  };
 
   if (loading) return <p className="text-center my-10 text-red-800">Loading</p>;
 
@@ -386,7 +406,7 @@ export default function AddParcel() {
           <div>
             <button
               type="submit"
-              className="bg-green-600 text-white px-6 py-2 rounded-md font-semibold"
+              className="bg-green-600 text-white px-6 py-2 rounded-md font-semibold cursor-pointer"
             >
               Submit Parcel
             </button>
