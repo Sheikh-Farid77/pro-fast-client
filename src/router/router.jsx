@@ -8,6 +8,9 @@ import CoveragePage from "../pages/CoveragePage";
 
 import PrivateRoute from "../route/PrivateRoute";
 import SendParcelPage from "../pages/SendParcelPage";
+import DashboardLayout from "../layouts/DashboardLayout";
+import Parcels from "../components/dashboard/Parcels";
+import Payment from "../components/payment/Payment";
 
 export let router = createBrowserRouter([
   {
@@ -29,7 +32,7 @@ export let router = createBrowserRouter([
             <SendParcelPage />
           </PrivateRoute>
         ),
-        loader: () => fetch('../../public/data/warehouses.json')
+        loader: () => fetch("../../public/data/warehouses.json"),
       },
     ],
   },
@@ -40,11 +43,29 @@ export let router = createBrowserRouter([
       {
         path: "login",
         Component: LoginPage,
-      },
+      }, 
       {
         path: "register",
         Component: RegisterPage,
       },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <PrivateRoute>
+        <DashboardLayout />
+      </PrivateRoute>
+    ),
+    children: [
+      {
+        index: true,
+        Component: Parcels,
+      },
+      {
+        path: "payment/:id",
+        Component: Payment
+      }
     ],
   },
 ]);

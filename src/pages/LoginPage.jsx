@@ -13,7 +13,6 @@ export default function LoginPage() {
   const {
     handleSubmit,
     register,
-    setError,
     formState: { errors },
   } = useForm();
   const submitForm = (formData) => {

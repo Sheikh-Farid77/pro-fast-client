@@ -44,6 +44,22 @@ export default function Nav() {
       >
         Send Parcel
       </NavLink>
+      {
+        user && <>
+          <NavLink
+        to="/dashboard"
+        className={({ isActive }) =>
+          `relative px-3 py-2 font-semibold text-xl text-gray-700  transition ${
+            isActive
+              ? "bg-[#CAEB66] px-5 py-2 rounded-full after:w-full"
+              : "text-gray-700 hover:text-blue-600"
+          }`
+        }
+      >
+        Dashboard
+      </NavLink>
+        </>
+      }
 
       <NavLink
         to="/coverage"
